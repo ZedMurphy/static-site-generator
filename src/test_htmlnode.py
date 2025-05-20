@@ -1,6 +1,6 @@
 import unittest
 
-from htmlnode import HTMLNode, LeafNode
+from htmlnode import HTMLNode, LeafNode, ParentNode
 
 
 class TestHTMLNode(unittest.TestCase):
@@ -45,6 +45,54 @@ class TestLeafNode(unittest.TestCase):
             leaf_node5 = LeafNode(None, "")
             leaf_node5.to_html()
         self.assertEqual(str(context.exception), "Nothing to print (no value given).")
+
+
+class TestParentNode(unittest.TestCase):
+
+    def test_to_html_with_children(self):
+        child_node = LeafNode("span", "child")
+        parent_node = ParentNode("div", [child_node])
+        self.assertEqual(parent_node.to_html(), "<div><span>child</span></div>")
+
+    def test_to_html_with_grandchildren(self):
+        grandchild_node = LeafNode("b", "grandchild")
+        child_node = ParentNode("span", [grandchild_node])
+        parent_node = ParentNode("div", [child_node])
+        self.assertEqual(
+            parent_node.to_html(),
+            "<div><span><b>grandchild</b></span></div>",
+        )
+
+    def test_to_html_with_multiple_children(self):
+        child_node1 = LeafNode("span", "child")
+        child_node2 = LeafNode("a", "Click me!", {"href": "https://www.google.com"})
+        parent_node = ParentNode("div", [child_node1, child_node2])
+        self.assertEqual(parent_node.to_html(), '<div><span>child</span><a href="https://www.google.com">Click me!</a></div>')
+
+    def test_to_html_with_mixed_child_types(self):
+        grandchild_node = LeafNode("b", "grandchild")
+        child_node1 = ParentNode("span", [grandchild_node])
+        child_node2 = LeafNode("a", "Click me!", {"href": "https://www.google.com"})
+        parent_node = ParentNode("div", [child_node1, child_node2])
+        self.assertEqual(
+            parent_node.to_html(),
+            '<div><span><b>grandchild</b></span><a href="https://www.google.com">Click me!</a></div>',
+        )
+
+    def test_to_html_props_on_parent_node(self):
+        child_node = LeafNode("span", "child")
+        parent_node = ParentNode("div", [child_node], {"style": "text-align:right"})
+        self.assertEqual(parent_node.to_html(), '<div style="text-align:right"><span>child</span></div>')
+
+    def test_to_html_ValueError(self):
+        with self.assertRaises(ValueError) as context:
+            parent_node1 = ParentNode("div", [])
+            parent_node1.to_html()
+        self.assertEqual(str(context.exception), "No children provided.")
+        with self.assertRaises(ValueError) as context:    
+            parent_node2 = ParentNode("", [])
+            parent_node2.to_html()
+        self.assertEqual(str(context.exception), "No tag provided.")
 
 
 if __name__ == "__main__":
