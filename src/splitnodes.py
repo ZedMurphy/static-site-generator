@@ -114,3 +114,14 @@ def text_to_textnodes(text):
     outputs4 = split_nodes_delimiter(outputs3, "**", TextType.BOLD)
     outputs5 = split_nodes_delimiter(outputs4, "_", TextType.ITALIC)
     return outputs5
+
+
+def markdown_to_blocks(markdown):
+    if not markdown:
+        raise Exception("No markdown text given.")    
+    splitted_markdown = markdown.split("\n\n")
+    clean_blocks = []
+    for block in splitted_markdown:
+        if block.strip() != "":
+            clean_blocks.append(block.strip())
+    return clean_blocks

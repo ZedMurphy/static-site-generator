@@ -1,6 +1,6 @@
 import unittest
 
-from splitnodes import split_nodes_delimiter, split_nodes_image, split_nodes_link, text_to_textnodes
+from splitnodes import split_nodes_delimiter, split_nodes_image, split_nodes_link, text_to_textnodes, markdown_to_blocks
 from markdownextraction import extract_markdown_images, extract_markdown_links
 from textnode import TextType, TextNode
 
@@ -236,3 +236,40 @@ class TestSplitNodes(unittest.TestCase):
             TextNode(" and some trailing text.", TextType.TEXT)
         ]
         self.assertListEqual(text_to_textnodes(input2), expected_output2)
+
+
+    def test_markdown_to_blocks(self):
+        md = """
+This is **bolded** paragraph
+
+This is another paragraph with _italic_ text and `code` here
+This is the same paragraph on a new line
+
+- This is a list
+- with items
+"""
+        blocks = markdown_to_blocks(md)
+        self.assertEqual(
+            blocks,
+            [
+                "This is **bolded** paragraph",
+                "This is another paragraph with _italic_ text and `code` here\nThis is the same paragraph on a new line",
+                "- This is a list\n- with items",
+            ],
+        )
+
+        md2 = """
+This is _italic_stuff.
+
+            
+
+     And more stuff with leading whitespace and some `code` and some **bold** text and trailing whitespace.         
+"""
+        blocks2 = markdown_to_blocks(md2)
+        self.assertEqual(
+            blocks2,
+            [
+                "This is _italic_stuff.",
+                "And more stuff with leading whitespace and some `code` and some **bold** text and trailing whitespace."
+            ],
+        )
