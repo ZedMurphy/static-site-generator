@@ -38,7 +38,14 @@ def block_to_block_type(markdown_block):
         for line in splitted_block:
             if not line.startswith("- "):
                 return BlockType.PARAGRAPH
-        return BlockType.UNORDERED_LIST            
+        return BlockType.UNORDERED_LIST
+    
+    elif markdown_block.startswith("* "):
+        splitted_block = markdown_block.split("\n")
+        for line in splitted_block:
+            if not line.startswith("* "):
+                return BlockType.PARAGRAPH
+        return BlockType.UNORDERED_LIST               
         
     elif markdown_block.startswith("1. "):
         splitted_block = markdown_block.split("\n")
