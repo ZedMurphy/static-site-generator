@@ -23,7 +23,8 @@ class TextNode:
     
 
 def text_node_to_html_node(text_node):
-    
+    # print(f"Converting TextNode: text='{text_node.text}', type={text_node.text_type}")
+
     match text_node.text_type:
         case (TextType.TEXT):
             return LeafNode(None, text_node.text)
@@ -36,7 +37,7 @@ def text_node_to_html_node(text_node):
         case (TextType.LINK):
             return LeafNode("a", text_node.text, {"href": text_node.url})
         case (TextType.IMAGE):
-            return LeafNode("img", "", {"src": text_node.url, "alt": text_node.text})
+            return LeafNode("img", None, {"src": text_node.url, "alt": text_node.text})
         case _:
             raise Exception("No valid text type given.")
         

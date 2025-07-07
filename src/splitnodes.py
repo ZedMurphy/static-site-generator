@@ -37,8 +37,9 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
         # Create nodes for each part (if they have content)
         if before_text:
             new_nodes.append(TextNode(before_text, TextType.TEXT))
-            
-        new_nodes.append(TextNode(between_text, text_type))
+
+        if between_text:    
+            new_nodes.append(TextNode(between_text, text_type))
 
         # What about the after_text? It might contain more delimiter pairs!
         if after_text:
@@ -68,13 +69,14 @@ def split_nodes_image(old_nodes):
                 raise ValueError("invalid markdown, image section not closed")
             if sections[0] != "":
                 new_nodes.append(TextNode(sections[0], TextType.TEXT))
-            new_nodes.append(
-                TextNode(
-                    image[0],
-                    TextType.IMAGE,
-                    image[1],
+            if image[0] and image[1]:
+                new_nodes.append(
+                    TextNode(
+                        image[0],
+                        TextType.IMAGE,
+                        image[1],
+                    )
                 )
-            )
             original_text = sections[1]
         if original_text != "":
             new_nodes.append(TextNode(original_text, TextType.TEXT))
@@ -107,6 +109,8 @@ def split_nodes_link(old_nodes):
 
 def text_to_textnodes(text):
     initial_text = []
+    if text == "":
+        return initial_text    
     initial_text.append(TextNode(text, TextType.TEXT))
     outputs1 = split_nodes_image(initial_text)
     outputs2 = split_nodes_link(outputs1)
